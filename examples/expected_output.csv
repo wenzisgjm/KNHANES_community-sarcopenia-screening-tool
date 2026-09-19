@@ -1,0 +1,4 @@
+ID,model_score,screening_result,recommended_action
+SYN-001,0.027285979214,Screen negative,No automatic referral based on this tool alone; assess further if symptoms or clinical concern are present.
+SYN-002,0.482974562876,Screen positive,Arrange a standardised sarcopenia assessment according to the local protocol.
+SYN-003,0.019656567963,Screen negative,No automatic referral based on this tool alone; assess further if symptoms or clinical concern are present.

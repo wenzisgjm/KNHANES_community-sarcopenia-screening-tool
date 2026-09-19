@@ -1,0 +1,4 @@
+ID,sex,age,EQ5D,pa_aerobic,is_allownc,Chew_Diff,Prot_Deficiency,N_EN,HE_wc,obe_4class
+SYN-001,F,68,0.95,0,0,0,0,1900,84,2
+SYN-002,M,80,0.62,1,1,1,1,1250,72,1
+SYN-003,F,75,0.81,1,0,0,1,1550,91,3
