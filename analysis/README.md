@@ -6,7 +6,9 @@ The script reads two supplied analytic CSV files directly. It does not perform u
 
 ## Run
 
-Use Python 3.12.14. From the repository root:
+Use Python 3.13.15 for the manuscript analysis environment recorded in the saved primary-analysis notebook output. That output reports scikit-learn 1.6.1 and SHAP 0.52.0. The other pinned packages below are reproduction dependencies, not a captured package freeze of that notebook session. The web application's runtime and model-loading dependencies are maintained separately at the repository root.
+
+From the repository root:
 
 ```bash
 python -m pip install -r analysis/requirements.txt
