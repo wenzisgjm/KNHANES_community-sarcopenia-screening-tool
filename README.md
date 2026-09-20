@@ -102,7 +102,7 @@ The same PDF can be downloaded directly from the web application under **How to 
 
 ## Code availability
 
-This repository is the manuscript-facing public snapshot of the web application. The files are provided together so that reviewers and readers can inspect and run the application using the locked model artifacts.
+This repository contains the manuscript analysis code (`analysis/`), the Streamlit web application source, locked model artifacts, and software-validation materials. Reviewers and readers can run the analysis script with separately obtained study CSVs or inspect and run the application with the locked model and synthetic examples. Participant-level research data and analysis result files are not included.
 
 ## License
 
