@@ -1,6 +1,6 @@
 # Manuscript analysis code
 
-`Supplementary_Code.py` is the executable source corresponding to the manuscript's Supplementary Code PDF. It runs the primary KNHANES 2022 model development and 2024 temporal validation, then the expanded-sample LR Model 2 sensitivity analysis. This directory contains code only; no participant records or analysis results are included.
+`Supplementary_Code.py` is the executable manuscript analysis script. It runs the primary KNHANES 2022 model development and 2024 temporal validation, then the expanded-sample LR Model 2 sensitivity analysis. This directory contains code only; no participant records or analysis results are included.
 
 The script reads two supplied analytic CSV files directly. It does not perform upstream cohort construction, variable recoding, data cleaning, imputation, or de-identification. Input variables and coding must match the manuscript and Supplementary Information. The primary CSV contains the 36 candidate predictors, outcome (`Sarcopenia`), outcome components (`MAX_grip`, `ASMI`), `ID`, and `year`. The expanded CSV contains the same outcome and identification columns, `sex`, and the nine fixed LR Model 2 predictors; laboratory predictors are not required in this file. Both files contain 2022 and 2024 records.
 
