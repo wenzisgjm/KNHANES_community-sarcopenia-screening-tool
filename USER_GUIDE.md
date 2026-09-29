@@ -86,9 +86,9 @@ The application checks:
 - whether binary fields contain only 0 or 1;
 - whether `obe_4class` contains only 0, 1, 2, or 3;
 - whether participant identifiers are missing or duplicated; and
-- whether non-age model inputs contain missing values.
+- whether any model input contains a missing value.
 
-Invalid data produce an error and no prediction is generated. Missing non-age model inputs produce a warning and are imputed by the locked preprocessing pipeline. Users should investigate missingness rather than treating imputation as a substitute for data-quality review.
+If any model input is missing, the entire upload is rejected and no screening result is generated. Complete all required model inputs from the source records and upload the corrected file. The web application does not impute missing model inputs for scoring.
 
 ## 6. Reviewing and downloading results
 
@@ -159,7 +159,7 @@ The tool must not be used to diagnose sarcopenia, make autonomous treatment deci
 | Age above 80 | Code ages 80 years or older as 80 and upload the file again. |
 | Invalid binary code | Use only 0 or 1 according to the definition for that variable. |
 | Invalid weight-status code | Use only 0, 1, 2, or 3 according to the defined BMI categories. |
-| Missing model inputs warning | Verify the source data. If the missing values are retained, document that locked-pipeline imputation was used. |
+| Missing model inputs error | Complete every missing model input from the source records and upload the corrected file. No screening result is generated until all model inputs are present. |
 | Missing or duplicate `ID` warning | Correct identifiers so results can be matched to the intended participant records. |
 | Model files could not be loaded locally | Install the pinned dependencies and confirm that all locked model artifacts are present. |
 
@@ -185,5 +185,6 @@ The supplied screenshots were generated using synthetic records only and contain
 
 Source code, examples, tests, validation evidence, and the current application documentation are available at:
 
-<https://github.com/wenzisgjm/KNHANES_community-sarcopenia-screening-tool>
+<https://github.com/wenzisgjm/community-sarcopenia-screening-tool>
+
 

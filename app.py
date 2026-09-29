@@ -173,8 +173,8 @@ with tab_screening:
     st.subheader("Batch Screening")
     st.info(
         "Users can upload batch data in CSV or Excel format. The file must contain participant codes, "
-        "sex, and the required screening "
-        "variables. The tool will identify screen-positive participants who should receive further assessment."
+        "sex, and complete values for every required screening variable. Records with missing model inputs "
+        "are not scored. The tool will identify screen-positive participants who should receive further assessment."
     )
     st.write("Upload a CSV or Excel file containing at least the following columns:")
     required_batch_columns = ["ID", "sex"] + best_features
@@ -311,9 +311,8 @@ with tab_guide:
     )
     st.dataframe(input_table, width="stretch", hide_index=True)
     st.caption(
-        "Missing model inputs other than age are handled by the locked preprocessing pipeline using development-data "
-        "medians for continuous variables and most-frequent values for categorical variables. Extensive missingness may "
-        "reduce reliability and should be reviewed before interpretation."
+        "All model input fields must be complete. If any model input is missing, scoring stops and no screening "
+        "results are generated. Complete the missing values from the source record and upload the corrected file."
     )
 
     template_csv = pd.DataFrame(columns=required_batch_columns).to_csv(index=False).encode("utf-8-sig")
@@ -443,3 +442,4 @@ with tab_governance:
         f"Model version {MODEL_VERSION} | Web application version {APP_VERSION} | Updated {LAST_UPDATED} | "
         f"[Source code and version history]({REPOSITORY_URL})"
     )
+

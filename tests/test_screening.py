@@ -98,7 +98,7 @@ class ScreeningValidationTests(unittest.TestCase):
         self.assertIn("pa_aerobic contains invalid code", combined)
         self.assertIn("obe_4class contains invalid code", combined)
 
-    def test_missing_non_age_predictor_generates_imputation_warning(self):
+    def test_missing_predictor_stops_scoring(self):
         data = pd.DataFrame(
             {
                 "ID": ["SYN-MISSING"],
@@ -116,8 +116,12 @@ class ScreeningValidationTests(unittest.TestCase):
         )
         _, errors, warnings = validate_batch_data(data, FEATURES)
 
-        self.assertEqual(errors, [])
-        self.assertTrue(any("EQ5D (1)" in warning for warning in warnings))
+        self.assertTrue(any("EQ5D (1)" in error for error in errors))
+        self.assertTrue(any("Scoring stopped" in error for error in errors))
+        self.assertEqual(warnings, [])
+
+        with self.assertRaisesRegex(ValueError, "model inputs are missing"):
+            predict(self.model, data[FEATURES], self.threshold)
 
     def test_age_above_80_requires_top_coding(self):
         data = pd.DataFrame(
@@ -186,3 +190,4 @@ class ScreeningValidationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

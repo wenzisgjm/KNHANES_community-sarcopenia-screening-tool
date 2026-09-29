@@ -28,6 +28,8 @@ ID, sex, age, EQ5D, pa_aerobic, is_allownc, Chew_Diff,
 Prot_Deficiency, N_EN, HE_wc, obe_4class
 ```
 
+All nine model predictor fields must contain valid values. If any model input is missing, the application stops scoring the uploaded file and asks the user to complete the source data and upload it again.
+
 `ID` should be a non-identifying participant code. `ID` and `sex` are retained for result management and are not used as model predictors. Age must be numeric, with ages 80 years or older coded as 80. For `is_allownc`, current or previous National Basic Livelihood Security receipt is coded as 1 and no history as 0. Detailed definitions and coding rules are displayed in the application under **How to Use** and **Model Info**.
 
 ## Output
@@ -42,7 +44,6 @@ The score is a screening estimate, not a confirmed individual clinical probabili
 
 ## Repository contents
 
-- `analysis/`: manuscript model-development and temporal-validation source code, run instructions, and pinned dependencies.
 - `app.py`: Streamlit user interface.
 - `screening_core.py`: prediction, file-reading, result-action, and input-validation logic.
 - `best_sarcopenia_lr_model2.pkl`: locked logistic-regression pipeline.
@@ -102,8 +103,9 @@ The same PDF can be downloaded directly from the web application under **How to 
 
 ## Code availability
 
-This repository contains the manuscript analysis code (`analysis/`), the Streamlit web application source, locked model artifacts, and software-validation materials. Reviewers and readers can run the analysis script with separately obtained study CSVs or inspect and run the application with the locked model and synthetic examples. Participant-level research data and analysis result files are not included.
+This repository is the manuscript-facing public snapshot of the web application. The files are provided together so that reviewers and readers can inspect and run the application using the locked model artifacts.
 
 ## License
 
 This project is released under the MIT License. See `LICENSE`.
+

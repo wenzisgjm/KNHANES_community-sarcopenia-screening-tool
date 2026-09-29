@@ -16,6 +16,11 @@ SCREEN_NEGATIVE_ACTION = (
 
 def predict(model, data: pd.DataFrame, threshold: float) -> pd.DataFrame:
     """Generate model scores, screening classifications, and recommended actions."""
+    if data.isna().any().any():
+        raise ValueError(
+            "Prediction cannot proceed because one or more model inputs are missing."
+        )
+
     probabilities = model.predict_proba(data)[:, 1]
     predicted_class = (probabilities >= threshold).astype(int)
 
@@ -61,8 +66,6 @@ def validate_batch_data(data: pd.DataFrame, feature_columns: list[str]):
             errors.append(f"{column} contains {invalid_count} non-numeric value(s).")
         validated[column] = converted
 
-    if validated["age"].isna().any():
-        errors.append("Age is required for every participant and cannot be missing.")
     if (validated["age"] < 65).any():
         count = int((validated["age"] < 65).sum())
         errors.append(
@@ -99,16 +102,16 @@ def validate_batch_data(data: pd.DataFrame, feature_columns: list[str]):
         )
 
     missing_counts = validated[feature_columns].isna().sum()
-    imputed_columns = [
+    missing_columns = [
         f"{column} ({int(count)})"
         for column, count in missing_counts.items()
-        if count and column != "age"
+        if count
     ]
-    if imputed_columns:
-        warnings.append(
-            "Missing model inputs will be imputed by the locked preprocessing pipeline: "
-            + ", ".join(imputed_columns)
-            + "."
+    if missing_columns:
+        errors.append(
+            "Scoring stopped because required model inputs are missing: "
+            + ", ".join(missing_columns)
+            + ". Complete all model input fields and upload the corrected file."
         )
 
     if validated["ID"].isna().any():
@@ -122,3 +125,4 @@ def validate_batch_data(data: pd.DataFrame, feature_columns: list[str]):
         )
 
     return validated, errors, warnings
+
