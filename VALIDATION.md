@@ -91,4 +91,3 @@ On 29 September 2026, the automated suite completed successfully under Python `3
 - The 2024 evaluation is temporal validation within the KNHANES survey framework, not independent external validation.
 - Pickle-based model files should be loaded only from this trusted repository release.
 - Local calibration and workflow validation are required before operational implementation in a new setting.
-

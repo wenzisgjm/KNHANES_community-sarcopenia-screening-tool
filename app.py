@@ -442,4 +442,3 @@ with tab_governance:
         f"Model version {MODEL_VERSION} | Web application version {APP_VERSION} | Updated {LAST_UPDATED} | "
         f"[Source code and version history]({REPOSITORY_URL})"
     )
-

@@ -185,6 +185,5 @@ The supplied screenshots were generated using synthetic records only and contain
 
 Source code, examples, tests, validation evidence, and the current application documentation are available at:
 
-<https://github.com/wenzisgjm/community-sarcopenia-screening-tool>
-
+<https://github.com/wenzisgjm/KNHANES_community-sarcopenia-screening-tool>
 

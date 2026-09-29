@@ -125,4 +125,3 @@ def validate_batch_data(data: pd.DataFrame, feature_columns: list[str]):
         )
 
     return validated, errors, warnings
-

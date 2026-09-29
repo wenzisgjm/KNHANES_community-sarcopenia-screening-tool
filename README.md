@@ -44,6 +44,7 @@ The score is a screening estimate, not a confirmed individual clinical probabili
 
 ## Repository contents
 
+- `analysis/`: manuscript model-development and temporal-validation source code, run instructions, and pinned dependencies.
 - `app.py`: Streamlit user interface.
 - `screening_core.py`: prediction, file-reading, result-action, and input-validation logic.
 - `best_sarcopenia_lr_model2.pkl`: locked logistic-regression pipeline.
@@ -103,9 +104,8 @@ The same PDF can be downloaded directly from the web application under **How to 
 
 ## Code availability
 
-This repository is the manuscript-facing public snapshot of the web application. The files are provided together so that reviewers and readers can inspect and run the application using the locked model artifacts.
+This repository contains the manuscript analysis code (`analysis/`), the Streamlit web application source, locked model artifacts, and software-validation materials. Reviewers and readers can run the analysis script with separately obtained study CSVs or inspect and run the application with the locked model and synthetic examples. Participant-level research data and analysis result files are not included.
 
 ## License
 
 This project is released under the MIT License. See `LICENSE`.
-
