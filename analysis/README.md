@@ -15,6 +15,8 @@ python -m pip install -r analysis/requirements.txt
 python analysis/Supplementary_Code.py --data /path/to/primary.csv --sensitivity-data /path/to/expanded.csv --output-dir /path/to/results
 ```
 
+If downloading individual files, keep `Supplementary_Code.py` and `revision_figures.py` together in the same directory (and obtain `requirements.txt` for the dependencies). The existing manuscript-model check still stops the analysis if the 2022 selection is not LR Model 2; the age-specific figure is defined only for that locked model.
+
 The primary analysis outputs are written to the selected result directory. Expanded-sample outputs are written to its `sensitivity_analysis/` subdirectory. These outputs can contain participant identifiers and predictions, so choose a local result directory appropriate for the input data. Result CSVs are not included in this repository.
 
 ## Analysis scope
@@ -23,4 +25,25 @@ The primary comparison uses the fixed 11-variable pool established in the full 2
 
 Other analyses include all 36 paired candidate AUC comparisons with one Holm adjustment family, the age-only benchmark, the seven-variable model without waist circumference and obesity class, screening and referral burden, calibration, decision curves, outcome-component summaries, and SHAP summaries. The expanded-sample sensitivity analysis keeps the nine LR Model 2 predictors, refits on expanded 2022 data, locks a separate threshold, and evaluates both that threshold and the primary threshold on expanded 2024 data.
 
-Bootstrap confidence intervals use 5,000 outcome-stratified resamples of fixed predictions. They are conditional on the fitted model and observed class counts; model selection and fitting are not repeated in bootstrap samples. The submitted code was checked with synthetic data, but manuscript results must be reproduced from the study CSVs. The screening application at the repository root is versioned separately from this analysis script.
+Bootstrap confidence intervals use 5,000 outcome-stratified resamples of fixed predictions. They are conditional on the fitted model and observed class counts; model selection and fitting are not repeated in bootstrap samples. The analysis script has synthetic-data checks, and the revised figure helpers were also checked against the existing study fold results and locked validation predictions; reproducing the complete analysis requires the study CSVs. The screening application at the repository root is versioned separately from this analysis script.
+
+## Revised manuscript figures
+
+`revision_figures.py` reproduces the two final notebook layouts without fitting models, changing predictions, or selecting thresholds. `Supplementary_Code.py` calls it during the primary analysis. The fold plot uses the 45 original held-out fold results, reconciled against the corresponding OOF predictions, in the fixed order LR Models 1–3, RF Models 1–3, and GB Models 1–3. Its two panels show ROC-AUC and PR-AUC (average precision): five points per model, observed minimum–maximum ranges, and arithmetic means. The ranges are descriptive, not confidence intervals or standard-deviation error bars.
+
+The compact age ROC plot uses only the 2024 validation participants and the same locked LR Model 2 and 2022 OOF threshold in both groups (65–74 and ≥75 years). It checks prediction alignment against the locked pipeline. Its 95% percentile intervals use 5,000 outcome-stratified bootstrap resamples per group, with one `numpy.random.default_rng(42)` stream: ages 65–74 first, then ≥75; cases are sampled before non-cases in each replicate. The model and threshold remain fixed. This subgroup seed differs from the existing overall validation seed; neither changes model fitting.
+
+The following files are written under the selected output directory:
+
+| Location | Output |
+| --- | --- |
+| `reviewer_figures/candidate_model_fold_AUC_AP_distribution_2022.png` and `.pdf` | Two-panel fold figure; PNG at 600 dpi |
+| `reviewer_figures/candidate_model_fold_AUC_AP_plot_data_2022.csv` | The 45 plotted fold rows with validation/event counts |
+| `reviewer_figures/candidate_model_fold_AUC_AP_summary_2022.csv` | Means, sample SDs, minima, and maxima for both metrics |
+| `candidate_model_performance.png` | Backward-compatible filename for the same revised fold figure |
+| `reviewer_figures/ROC_age_groups_2024_LR_Model_2.png` and `.pdf` | Compact age-group ROC figure; PNG at 600 dpi |
+| `reviewer_figures/ROC_age_groups_2024_LR_Model_2_metrics.csv` | Subgroup counts, AUC, sensitivity, specificity, bootstrap intervals, and fixed threshold |
+| `reviewer_figures/ROC_age_groups_2024_LR_Model_2_coordinates.csv` | Empirical subgroup ROC coordinates and thresholds |
+
+These outputs stay in the selected local result directory; they are not included in this code repository.
+

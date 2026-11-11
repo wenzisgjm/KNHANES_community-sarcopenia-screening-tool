@@ -46,6 +46,11 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from statsmodels.stats.multitest import multipletests
 from statsmodels.stats.proportion import proportion_confint
 
+if __package__:
+    from .revision_figures import plot_candidate_fold_discrimination, plot_age_stratified_roc
+else:
+    from revision_figures import plot_candidate_fold_discrimination, plot_age_stratified_roc
+
 
 RANDOM_STATE = 42
 N_SPLITS = 5
@@ -637,33 +642,12 @@ def bootstrap_validation_metrics(y, probability, threshold):
     return point, pd.DataFrame(rows)
 
 
-def plot_candidate_models(summary, output_dir):
-    plot_data = summary.sort_values("ROC_AUC_mean").copy()
-    labels = plot_data["algorithm"].str.replace("LogisticRegression", "LR")
-    labels = labels.str.replace("RandomForest", "RF")
-    labels = labels.str.replace("GradientBoosting", "GB")
-    labels = labels + " | " + plot_data["feature_set"].str.replace("_", " ")
-    y_position = np.arange(len(plot_data))
-    figure, axes = plt.subplots(1, 2, sharey=True)
-    for axis, metric, title in [
-        (axes[0], "ROC_AUC", "ROC-AUC"),
-        (axes[1], "PR_AUC", "PR-AUC"),
-    ]:
-        for row, position in zip(plot_data.itertuples(), y_position):
-            axis.errorbar(
-                getattr(row, f"{metric}_mean"),
-                position,
-                xerr=getattr(row, f"{metric}_std"),
-                fmt="o",
-            )
-        axis.set_xlabel(f"Mean {title}")
-        axis.set_title(title)
-    axes[0].set_yticks(y_position, labels)
-    axes[0].set_ylabel("Candidate model")
-    figure.suptitle("Nested Internal Validation in the 2022 Development Cohort")
-    figure.tight_layout()
-    figure.savefig(output_dir / "candidate_model_performance.png")
-    plt.close(figure)
+def plot_candidate_models(fold_results, output_dir, *, y_development, oof_registry):
+    """Display five held-out fold points, min–max ranges, and arithmetic means."""
+    return plot_candidate_fold_discrimination(
+        fold_results, output_dir, y_development=y_development,
+        oof_registry=oof_registry, random_state=RANDOM_STATE,
+    )
 
 
 def plot_roc_pr(y, probability, threshold, validation_table, output_dir):
@@ -926,7 +910,10 @@ def run_analysis(data_path, output_dir):
         )
     fold_results.to_csv(output_dir / "candidate_model_fold_results_2022.csv", index=False)
     summary.to_csv(output_dir / "Table_S3_candidate_models.csv", index=False)
-    plot_candidate_models(summary, output_dir)
+    plot_candidate_models(
+        fold_results, output_dir,
+        y_development=y_development, oof_registry=oof_registry,
+    )
 
     strict_folds, strict_summary, strict_outer, strict_inner = (
         strict_nested_feature_selection_sensitivity(development_data)
@@ -991,6 +978,11 @@ def run_analysis(data_path, output_dir):
         y_validation, validation_probability, locked_threshold
     )
     validation_table.to_csv(output_dir / "Table_S4_temporal_validation.csv", index=False)
+    plot_age_stratified_roc(
+        validation_data, validation_probability, locked_threshold, output_dir,
+        fitted_pipeline=locked_pipeline, features=locked_features,
+        selected_key=selected_key, outcome=OUTCOME, random_state=RANDOM_STATE,
+    )
     age_probability = age_model.predict_proba(validation_data[["age"]])[:, 1]
     reduced_probability = reduced_model.predict_proba(validation_data[reduced_features])[:, 1]
     benchmark_tables, burden_rows = [], []
@@ -1232,3 +1224,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
