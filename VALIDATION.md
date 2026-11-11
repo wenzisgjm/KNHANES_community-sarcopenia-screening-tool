@@ -2,7 +2,7 @@
 
 ## Scope
 
-This document describes validation checks for web application version `1.1.2` using locked model version `1.0.0`. The checks evaluate implementation consistency and input-handling behavior. They do not constitute prospective clinical validation or external validation in an independent population.
+This document describes validation checks for web application version `1.1.3` using locked model version `1.0.0`. The checks evaluate implementation consistency and input-handling behavior. They do not constitute prospective clinical validation or external validation in an independent population.
 
 ## Locked artifacts
 
@@ -20,7 +20,7 @@ age, EQ5D, pa_aerobic, is_allownc, Chew_Diff,
 Prot_Deficiency, N_EN, HE_wc, obe_4class
 ```
 
-The locked screening threshold is `0.082884`. A model score greater than or equal to this value is classified as `Screen positive`.
+The locked screening threshold is stored as `0.08288411913207902`, matching the unrounded 2022 OOF threshold used in the manuscript analysis. A model score greater than or equal to this value is classified as `Screen positive`. The interface displays the rounded value `0.082884`; display rounding is not used for classification.
 
 ## Automated checks
 
@@ -41,6 +41,7 @@ The test suite checks that:
 7. Invalid binary and obesity-class codes are rejected.
 8. Any missing model predictor generates a blocking error, and no score is produced.
 9. The synthetic example input reproduces the version-controlled expected output within the specified numerical tolerance.
+10. A score between the displayed rounded threshold and the unrounded stored threshold remains screen negative.
 
 ## Synthetic validation example
 
@@ -84,6 +85,8 @@ The application checks required columns, numeric conversion, age eligibility (in
 On 4 September 2026, the automated suite completed successfully under Python `3.12.14`: 7 tests run, 7 passed, 0 failed. The Streamlit application compiled successfully, started locally, and returned `ok` from `/_stcore/health`. The batch-screening workflow was exercised with `examples/sample_input.csv`, including the updated age top-coding example, and the resulting interface was reviewed in a desktop viewport before the supplementary screenshots were retained. For web application version `1.1.2`, the **How to Use** tab displayed the updated field definitions and the user-manual download control, and the regenerated PDF was checked by text extraction and visual review of all pages.
 
 On 29 September 2026, the automated suite completed successfully under Python `3.12.14`: 7 tests run, 7 passed, 0 failed. The missing-input test was revised to confirm that any missing model predictor returns a blocking validation error and that the prediction function independently rejects incomplete model inputs. The application and validation modules compiled successfully, and the local Streamlit health endpoint returned HTTP 200. The user manual was updated to remove instructions permitting locked-pipeline imputation during web scoring.
+
+On 11 November 2026, the automated suite completed successfully under Python `3.12.14` with scikit-learn `1.6.1`: 8 tests run, 8 passed, 0 failed. The threshold artifact and metadata were aligned to the unrounded manuscript threshold without changing the fitted pipeline or feature artifact. Local Streamlit `1.61.1` AppTest checks exercised both CSV and XLSX uploads of the three public synthetic examples; scores and classifications matched the expected output (one positive and two negative), and the results-download control was present. Missing predictor data blocked results. The updated independent-external-validation statement was also verified. These were local application checks, not an end-to-end upload test of the hosted service.
 
 ## Limitations of this validation
 

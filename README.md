@@ -7,10 +7,12 @@ The application was developed with Streamlit and is deployed on Render. It provi
 ## Versions
 
 - Locked model version: `1.0.0`
-- Web application version: `1.1.2`
+- Web application version: `1.1.3`
 - Python: `3.12.13`
 
 The model and web application are versioned separately. Interface, documentation, or validation changes do not imply that the locked model was retrained.
+
+Version 1.1.3 stores the unrounded 2022 locked threshold (`0.08288411913207902`) while retaining rounded display values, and explicitly states that independent external validation remains necessary before clinical implementation. The locked model pipeline was not retrained.
 
 ## Screening mode
 

@@ -57,8 +57,8 @@ class ScreeningValidationTests(unittest.TestCase):
         self.assertEqual(self.metadata["final_feature_set"], "Model_2")
         self.assertEqual(list(self.stored_features), FEATURES)
         self.assertEqual(list(self.metadata["features"]), FEATURES)
-        self.assertAlmostEqual(self.threshold, 0.082884, places=12)
-        self.assertAlmostEqual(float(self.metadata["threshold"]), self.threshold, places=12)
+        self.assertEqual(self.threshold, 0.08288411913207902)
+        self.assertEqual(float(self.metadata["threshold"]), self.threshold)
 
     def test_threshold_boundary_and_recommended_actions(self):
         scores = [self.threshold - 1e-12, self.threshold, self.threshold + 1e-12]
@@ -74,6 +74,14 @@ class ScreeningValidationTests(unittest.TestCase):
             output["recommended_action"].tolist(),
             [SCREEN_NEGATIVE_ACTION, SCREEN_POSITIVE_ACTION, SCREEN_POSITIVE_ACTION],
         )
+
+    def test_display_rounding_does_not_change_classification(self):
+        displayed_threshold = float(f"{self.threshold:.6f}")
+        score = (displayed_threshold + self.threshold) / 2
+        self.assertGreater(score, displayed_threshold)
+        model = FixedProbabilityModel([score])
+        output = predict(model, pd.DataFrame({"test_value": [1]}), self.threshold)
+        self.assertEqual(output["predicted_class"].tolist(), [0])
 
     def test_invalid_age_and_category_codes_are_rejected(self):
         data = pd.DataFrame(

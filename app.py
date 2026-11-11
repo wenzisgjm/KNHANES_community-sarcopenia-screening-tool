@@ -30,8 +30,8 @@ EXPECTED_FEATURES = [
 ]
 
 MODEL_VERSION = "1.0.0"
-APP_VERSION = "1.1.2"
-LAST_UPDATED = "September 2026"
+APP_VERSION = "1.1.3"
+LAST_UPDATED = "November 2026"
 VALIDATION_N = 1156
 REPOSITORY_URL = "https://github.com/wenzisgjm/KNHANES_community-sarcopenia-screening-tool"
 
@@ -392,7 +392,8 @@ with tab_transparency:
     st.write(
         "Performance may differ across settings, demographic groups, data-collection methods, and disease prevalence. "
         "The tool has not been established as a standalone clinical decision-support system. Model scores should not be "
-        "interpreted as confirmed individual probabilities unless calibration has been demonstrated in the intended local population."
+        "interpreted as confirmed individual probabilities unless calibration has been demonstrated in the intended local population. "
+        "Independent external validation remains necessary before clinical implementation."
     )
 
 with tab_governance:
