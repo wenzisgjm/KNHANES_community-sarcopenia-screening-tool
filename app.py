@@ -173,8 +173,8 @@ with tab_screening:
     st.subheader("Batch Screening")
     st.info(
         "Users can upload batch data in CSV or Excel format. The file must contain participant codes, "
-        "sex, and complete values for every required screening variable. Records with missing model inputs "
-        "are not scored. The tool will identify screen-positive participants who should receive further assessment."
+        "sex, and complete values for every required screening variable. If any record contains a missing model input, "
+        "the entire uploaded file is not scored. The tool will identify screen-positive participants who should receive further assessment."
     )
     st.write("Upload a CSV or Excel file containing at least the following columns:")
     required_batch_columns = ["ID", "sex"] + best_features
