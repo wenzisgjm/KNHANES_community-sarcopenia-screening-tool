@@ -341,26 +341,51 @@ def screening_burden(y, probability, threshold, label):
     }
 
 
-def paired_validation_difference(y, primary_probability, reduced_probability):
+def paired_validation_differences(y, primary_probability, comparators):
+    """Compare fixed 2024 predictions using one common stratified index stream."""
+    y = np.asarray(y, dtype=int)
+    primary_probability = np.asarray(primary_probability, dtype=float)
+    comparator_probabilities = {
+        label: np.asarray(probability, dtype=float)
+        for label, probability in comparators.items()
+    }
+    if any(len(probability) != len(y) for probability in comparator_probabilities.values()):
+        raise ValueError("Comparator predictions must align with the validation outcome.")
+
     rows = []
     metrics = {"ROC_AUC": roc_auc_score, "PR_AUC": average_precision_score}
-    distributions = {name: np.empty(N_BOOTSTRAP) for name in metrics}
+    distributions = {
+        label: {name: np.empty(N_BOOTSTRAP) for name in metrics}
+        for label in comparator_probabilities
+    }
     for iteration, index in enumerate(
         stratified_bootstrap_indices(y, N_BOOTSTRAP, RANDOM_STATE + 2024)
     ):
+        sampled_y = y[index]
+        primary_metrics = {
+            name: metric(sampled_y, primary_probability[index])
+            for name, metric in metrics.items()
+        }
+        for label, probability in comparator_probabilities.items():
+            for name, metric in metrics.items():
+                distributions[label][name][iteration] = (
+                    primary_metrics[name] - metric(sampled_y, probability[index])
+                )
+
+    for label, probability in comparator_probabilities.items():
         for name, metric in metrics.items():
-            distributions[name][iteration] = (
-                metric(np.asarray(y)[index], primary_probability[index])
-                - metric(np.asarray(y)[index], reduced_probability[index])
+            lower, upper = np.quantile(
+                distributions[label][name], [0.025, 0.975]
             )
-    for name, metric in metrics.items():
-        lower, upper = np.quantile(distributions[name], [0.025, 0.975])
-        rows.append({
-            "Metric": name,
-            "Difference_LR_Model_2_minus_LR_Model_1": metric(y, primary_probability)
-            - metric(y, reduced_probability),
-            "CI_lower_95": lower, "CI_upper_95": upper,
-        })
+            rows.append({
+                "Comparator": label,
+                "Metric": name,
+                "Difference_LR_Model_2_minus_comparator": (
+                    metric(y, primary_probability) - metric(y, probability)
+                ),
+                "CI_lower_95": lower,
+                "CI_upper_95": upper,
+            })
     return pd.DataFrame(rows)
 
 
@@ -1141,8 +1166,32 @@ def run_analysis(data_path, output_dir):
         burden_rows.append(screening_burden(y_validation, probability, threshold, label))
     pd.concat(benchmark_tables).to_csv(output_dir / "benchmark_performance.csv", index=False)
     pd.DataFrame(burden_rows).to_csv(output_dir / "screening_referral_burden.csv", index=False)
-    paired_validation_difference(y_validation, validation_probability, reduced_probability).to_csv(
-        output_dir / "anthropometry_removal_paired_comparison.csv", index=False
+    paired_validation_comparisons = paired_validation_differences(
+        y_validation,
+        validation_probability,
+        {
+            "Age_only": age_probability,
+            "LR_Model_1_no_anthropometry": reduced_probability,
+        },
+    )
+    paired_validation_comparisons.to_csv(
+        output_dir / "paired_temporal_validation_auc_comparisons.csv", index=False
+    )
+    (
+        paired_validation_comparisons.loc[
+            paired_validation_comparisons["Comparator"].eq(
+                "LR_Model_1_no_anthropometry"
+            )
+        ]
+        .drop(columns="Comparator")
+        .rename(columns={
+            "Difference_LR_Model_2_minus_comparator":
+                "Difference_LR_Model_2_minus_LR_Model_1"
+        })
+        .to_csv(
+            output_dir / "anthropometry_removal_paired_comparison.csv",
+            index=False,
+        )
     )
     plot_roc_pr(
         y_validation,
