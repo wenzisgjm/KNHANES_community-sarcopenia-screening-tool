@@ -1,8 +1,8 @@
 # Supplementary Figure S1: Web-Based Screening Tool
 
-The screenshots in this directory were generated from web application version `1.1.2` using only the synthetic records in `examples/sample_input.csv`. They contain no participant or clinical-study data.
+The screenshots in this directory were generated from web application version `1.1.3` using only the synthetic records in `examples/sample_input.csv`. They contain no participant or clinical-study data.
 
-The screenshots are incorporated into the illustrated `USER_GUIDE.md` and the submission-ready `output/pdf/USER_GUIDE_v1.1.2.pdf` user manual.
+The screenshots are incorporated into the illustrated `USER_GUIDE.md` and the submission-ready `output/pdf/USER_GUIDE_v1.1.3.pdf` user manual.
 
 - `Figure_S1A_screening_interface.png`: batch-screening landing interface, intended-use statement, safety warning, and required columns.
 - `Figure_S1B_batch_results.png`: synthetic batch-screening results, screening summary, model scores, classifications, and recommended actions.

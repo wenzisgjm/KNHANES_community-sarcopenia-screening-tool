@@ -116,6 +116,141 @@ def parse_arguments():
     return parser.parse_args()
 
 
+def verify_primary_complete_case(data):
+    """Verify the documented final analytic input, not upstream raw-data exclusions."""
+    required = [
+        "year", "sex", "MAX_grip", "ASMI", OUTCOME,
+        *FEATURE_SETS["Model_3"],
+    ]
+    missing_columns = [column for column in required if column not in data.columns]
+    if missing_columns:
+        raise KeyError(f"Primary CSV is missing required columns: {missing_columns}")
+
+    audit = data[required].apply(pd.to_numeric, errors="coerce")
+    missing_counts = audit.isna().sum()
+    if missing_counts.any():
+        details = ", ".join(
+            f"{column} ({int(count)})"
+            for column, count in missing_counts.items()
+            if count
+        )
+        raise ValueError(f"Primary CSV is not complete for: {details}")
+
+    if not audit["year"].isin([2022, 2024]).all():
+        raise ValueError("Primary CSV must contain only survey years 2022 and 2024.")
+    if not audit["sex"].isin([1, 2]).all():
+        raise ValueError("Sex must use the documented 1/2 coding.")
+    if not audit[OUTCOME].isin([0, 1]).all():
+        raise ValueError(f"{OUTCOME} must contain only 0/1 values.")
+    if not audit["age"].between(65, 80).all():
+        raise ValueError("Age must be 65-80 after top-coding ages >=80 as 80.")
+
+    for column in ["pa_aerobic", "is_allownc", "Chew_Diff", "Prot_Deficiency"]:
+        if not audit[column].isin([0, 1]).all():
+            raise ValueError(f"{column} must contain only 0/1 values.")
+    if not audit["obe_4class"].isin([0, 1, 2, 3]).all():
+        raise ValueError("obe_4class must contain only 0/1/2/3 values.")
+
+    low_strength = (
+        ((audit["sex"] == 1) & (audit["MAX_grip"] < 28))
+        | ((audit["sex"] == 2) & (audit["MAX_grip"] < 18))
+    )
+    low_mass = (
+        ((audit["sex"] == 1) & (audit["ASMI"] < 7.0))
+        | ((audit["sex"] == 2) & (audit["ASMI"] < 5.7))
+    )
+    reconstructed = (low_strength & low_mass).astype(int)
+    if not np.array_equal(
+        reconstructed.to_numpy(), audit[OUTCOME].astype(int).to_numpy()
+    ):
+        raise ValueError("Stored outcome does not match the grip-plus-ASMI rule.")
+
+    observed = {
+        int(year): (len(group), int(group[OUTCOME].sum()))
+        for year, group in audit.groupby("year")
+    }
+    expected = {2022: (889, 67), 2024: (1156, 84)}
+    if observed != expected:
+        raise ValueError(
+            f"Primary sample counts differ from the manuscript: {observed}"
+        )
+    return pd.DataFrame([
+        {
+            "Year": year,
+            "N": n,
+            "Events": events,
+            "Missing_required_values": 0,
+            "Outcome_rule_matches": True,
+        }
+        for year, (n, events) in observed.items()
+    ])
+
+
+def age_adjusted_comparisons(data, output_dir):
+    """Reproduce Supplementary Table S15 in the pooled primary sample."""
+    required = [OUTCOME, "age", "EQ5D", "pa_aerobic"]
+    frame = data[required].apply(pd.to_numeric, errors="coerce")
+    if len(frame) != 2045 or frame.isna().any().any():
+        raise ValueError(
+            "Table S15 requires the pooled 2,045-person complete-case sample."
+        )
+    design = sm.add_constant(
+        frame[[OUTCOME, "age"]].astype(float), has_constant="add"
+    )
+    eq5d_fit = sm.OLS(frame["EQ5D"].astype(float), design).fit(cov_type="HC3")
+    eq5d_ci = eq5d_fit.conf_int().loc[OUTCOME]
+
+    activity_fit = sm.Logit(
+        frame["pa_aerobic"].astype(float), design
+    ).fit(disp=False)
+    activity_ci = activity_fit.conf_int().loc[OUTCOME]
+
+    table = pd.DataFrame([
+        {
+            "Outcome": "EQ-5D index",
+            "Effect_measure": "Adjusted mean difference",
+            "Estimate": float(eq5d_fit.params[OUTCOME]),
+            "CI_lower_95": float(eq5d_ci.iloc[0]),
+            "CI_upper_95": float(eq5d_ci.iloc[1]),
+            "P": float(eq5d_fit.pvalues[OUTCOME]),
+            "n": len(frame),
+            "Model": "OLS with HC3 robust standard errors",
+        },
+        {
+            "Outcome": "Insufficient aerobic activity",
+            "Effect_measure": "Adjusted odds ratio",
+            "Estimate": float(np.exp(activity_fit.params[OUTCOME])),
+            "CI_lower_95": float(np.exp(activity_ci.iloc[0])),
+            "CI_upper_95": float(np.exp(activity_ci.iloc[1])),
+            "P": float(activity_fit.pvalues[OUTCOME]),
+            "n": len(frame),
+            "Model": "Binary logistic regression",
+        },
+    ])
+
+    expected = {
+        "EQ-5D index": (-0.0179043, -0.0393778, 0.0035692, 0.1022182),
+        "Insufficient aerobic activity": (
+            1.7381044, 1.1421111, 2.6451076, 0.0098750
+        ),
+    }
+    for row in table.itertuples(index=False):
+        observed = np.array(
+            [row.Estimate, row.CI_lower_95, row.CI_upper_95, row.P]
+        )
+        if not np.allclose(
+            observed, np.array(expected[row.Outcome]), rtol=0, atol=5e-7
+        ):
+            raise ValueError(
+                f"Table S15 reconciliation failed for {row.Outcome}."
+            )
+
+    table.to_csv(
+        output_dir / "Table_S15_age_adjusted_comparisons.csv", index=False
+    )
+    return table
+
+
 def descriptive_comparison(first, second, features, welch=False):
     """Raw group summaries; SMD direction is group B minus group A."""
     rows = []
@@ -269,6 +404,8 @@ def make_preprocessor(features):
 
 
 def candidate_algorithms():
+    # Retain the observed class prevalence. No class weighting or oversampling
+    # is used, avoiding an artificial change to the probability calibration scale.
     return {
         "LogisticRegression": LogisticRegression(
              C=1.0, max_iter=5000, random_state=RANDOM_STATE
@@ -890,12 +1027,17 @@ def run_analysis(data_path, output_dir):
     output_dir.mkdir(parents=True, exist_ok=True)
 
     analytic_data = pd.read_csv(data_path, dtype={"ID": str})
+    complete_case_audit = verify_primary_complete_case(analytic_data)
+    complete_case_audit.to_csv(
+        output_dir / "primary_complete_case_audit.csv", index=False
+    )
     development_data = analytic_data.loc[analytic_data["year"].eq(2022)].reset_index(drop=True)
     validation_data = analytic_data.loc[analytic_data["year"].eq(2024)].reset_index(drop=True)
     y_development = development_data[OUTCOME].to_numpy(dtype=int)
     y_validation = validation_data[OUTCOME].to_numpy(dtype=int)
 
     descriptive_outputs(analytic_data, output_dir)
+    age_adjusted_comparisons(analytic_data, output_dir)
     ranking = rank_initial_candidates(development_data)
     ranking.to_csv(
         output_dir / "candidate_variable_RF_ranking_and_fixed_pool_2022.csv",

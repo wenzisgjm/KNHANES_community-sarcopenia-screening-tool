@@ -88,6 +88,8 @@ On 29 September 2026, the automated suite completed successfully under Python `3
 
 On 11 November 2026, the automated suite completed successfully under Python `3.12.14` with scikit-learn `1.6.1`: 8 tests run, 8 passed, 0 failed. The threshold artifact and metadata were aligned to the unrounded manuscript threshold without changing the fitted pipeline or feature artifact. Local Streamlit `1.61.1` AppTest checks exercised both CSV and XLSX uploads of the three public synthetic examples; scores and classifications matched the expected output (one positive and two negative), and the results-download control was present. Missing predictor data blocked results. The updated independent-external-validation statement was also verified. These were local application checks, not an end-to-end upload test of the hosted service.
 
+On 12 November 2026, the user guide was synchronized with web application version `1.1.3`: the release date was updated to November 2026, the independent-external-validation requirement was added, and all six synthetic-data screenshots were regenerated from the local application. The new `USER_GUIDE_v1.1.3.pdf` was checked by text extraction and visual review of all eight pages; obsolete `1.1.2` and September 2026 guide labels were absent. The local Streamlit health endpoint returned HTTP 200 before screenshot capture.
+
 ## Limitations of this validation
 
 - Automated tests establish software behavior, not clinical effectiveness.

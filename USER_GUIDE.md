@@ -3,9 +3,9 @@
 ## Community-Based Sarcopenia Screening Tool for Older Adults
 
 **Document version:** 1.0  
-**Web application version:** 1.1.2<br>
+**Web application version:** 1.1.3<br>
 **Locked model version:** 1.0.0  
-**Last updated:** September 2026
+**Last updated:** November 2026
 
 ## 1. Purpose and scope
 
@@ -122,13 +122,13 @@ The **How to Use** tab describes the recommended workflow, training requirements
 The model and web application are versioned separately:
 
 - Locked model version: `1.0.0`
-- Web application version: `1.1.2`
+- Web application version: `1.1.3`
 
 Changes to the interface, documentation, or software-validation evidence do not imply that the locked model was retrained.
 
 ![Model information](supplementary_material/Figure_S1D_model_information.png)
 
-The **Model Info** tab reports temporal validation using 2024 KNHANES data (`n = 1,156`). These estimates describe performance in the reported validation sample and do not guarantee equivalent performance in another population or setting.
+The **Model Info** tab reports temporal validation using 2024 KNHANES data (`n = 1,156`). These estimates describe performance in the reported validation sample and do not guarantee equivalent performance in another population or setting. Independent external validation remains necessary before clinical implementation.
 
 ![Temporal validation performance](supplementary_material/Figure_S1E_temporal_validation_performance.png)
 

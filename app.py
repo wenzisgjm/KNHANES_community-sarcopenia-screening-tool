@@ -8,7 +8,7 @@ from screening_core import predict, read_uploaded_table, validate_batch_data
 
 
 APP_DIR = Path(__file__).resolve().parent
-USER_GUIDE_PDF = APP_DIR / "output" / "pdf" / "USER_GUIDE_v1.1.2.pdf"
+USER_GUIDE_PDF = APP_DIR / "output" / "pdf" / "USER_GUIDE_v1.1.3.pdf"
 
 ARTIFACTS = {
     "model": APP_DIR / "best_sarcopenia_lr_model2.pkl",
