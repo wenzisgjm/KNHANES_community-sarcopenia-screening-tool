@@ -36,7 +36,7 @@ All nine model predictor fields must contain valid values. If any model input is
 
 ## Output
 
-The downloadable results contain the original input columns and:
+The downloadable results contain the required input columns and:
 
 - `model_score`: the model-generated screening score.
 - `screening_result`: `Screen positive` or `Screen negative`.
