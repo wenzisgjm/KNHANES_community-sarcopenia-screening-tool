@@ -96,7 +96,7 @@ The results page presents the number screened, the numbers classified as screen 
 
 ![Batch screening results](supplementary_material/User_Guide_Screenshot_B_batch_results.png)
 
-The downloaded CSV retains the original input fields and adds:
+The downloaded CSV retains the required input fields and adds:
 
 | Output field | Meaning |
 |---|---|
