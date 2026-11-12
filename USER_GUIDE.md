@@ -13,7 +13,7 @@ This guide explains how trained community-health, primary-care, and research per
 
 The tool is intended for preliminary sarcopenia risk screening among adults aged 65 years and older. It is a research demonstration and screening aid, not a diagnostic system or a substitute for clinical judgement. A screen-positive result requires a standardised sarcopenia assessment according to the applicable local protocol.
 
-![Screening interface](supplementary_material/Figure_S1A_screening_interface.png)
+![Screening interface](supplementary_material/User_Guide_Screenshot_A_screening_interface.png)
 
 ## 2. Before use
 
@@ -92,9 +92,9 @@ If any model input is missing, the entire upload is rejected and no screening re
 
 ## 6. Reviewing and downloading results
 
-The results page presents the number screened, the numbers classified as screen positive and screen negative, the positivity rate, a summary chart, and a participant-level table.
+The results page presents the number screened, the numbers classified as screen positive and screen negative, a summary chart, and a participant-level table.
 
-![Batch screening results](supplementary_material/Figure_S1B_batch_results.png)
+![Batch screening results](supplementary_material/User_Guide_Screenshot_B_batch_results.png)
 
 The downloaded CSV retains the original input fields and adds:
 
@@ -115,7 +115,7 @@ Do not interpret a screen-positive result as a diagnosis. Do not interpret a scr
 
 The **How to Use** tab describes the recommended workflow, training requirements, input requirements, and interpretation principles. It provides both a downloadable PDF user manual and a CSV input template.
 
-![How to Use tab](supplementary_material/Figure_S1C_how_to_use.png)
+![How to Use tab](supplementary_material/User_Guide_Screenshot_C_how_to_use.png)
 
 ## 8. Model and application information
 
@@ -126,11 +126,11 @@ The model and web application are versioned separately:
 
 Changes to the interface, documentation, or software-validation evidence do not imply that the locked model was retrained.
 
-![Model information](supplementary_material/Figure_S1D_model_information.png)
+![Model information](supplementary_material/User_Guide_Screenshot_D_model_information.png)
 
 The **Model Info** tab reports temporal validation using 2024 KNHANES data (`n = 1,156`). These estimates describe performance in the reported validation sample and do not guarantee equivalent performance in another population or setting. Independent external validation remains necessary before clinical implementation.
 
-![Temporal validation performance](supplementary_material/Figure_S1E_temporal_validation_performance.png)
+![Temporal validation performance](supplementary_material/User_Guide_Screenshot_E_temporal_validation_performance.png)
 
 ## 9. Governance, privacy, and prohibited uses
 
@@ -146,7 +146,7 @@ Users should:
 
 The tool must not be used to diagnose sarcopenia, make autonomous treatment decisions, replace professional judgement, or screen people outside the intended population.
 
-![Governance information](supplementary_material/Figure_S1F_governance.png)
+![Governance information](supplementary_material/User_Guide_Screenshot_F_governance.png)
 
 ## 10. Troubleshooting
 
