@@ -344,8 +344,8 @@ with tab_transparency:
         "Development sample": f"{metadata.get('development_year', 2022)} dataset, n={metadata.get('development_n', 889)}",
         "Temporal validation sample": f"{metadata.get('validation_year', 2024)} dataset, n={metadata.get('validation_n', VALIDATION_N)}",
         "Screening threshold": f"{best_threshold:.6f} ({best_threshold:.4%})",
-        "Threshold selection": metadata.get(
-            "threshold_method", "Youden index based on out-of-fold predictions from the development dataset"
+        "Threshold selection": (
+            "Locked Youden threshold from 2022 out-of-fold predictions in the 2022 development analysis"
         ),
         "scikit-learn version": metadata.get("sklearn_version", "Unknown"),
         "Last updated": LAST_UPDATED,
