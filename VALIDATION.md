@@ -90,6 +90,8 @@ On 11 November 2026, the automated suite completed successfully under Python `3.
 
 On 12 November 2026, the user guide was synchronized with web application version `1.1.3`: the release date was updated to November 2026, the independent-external-validation requirement was added, and all six synthetic-data screenshots were regenerated from the local application. The new `USER_GUIDE_v1.1.3.pdf` was checked by text extraction and visual review of all eight pages; obsolete `1.1.2` and September 2026 guide labels were absent. The local Streamlit health endpoint returned HTTP 200 before screenshot capture.
 
+On 12 November 2026, after aligning the deployment runtime with the manuscript analysis environment, the automated suite was repeated in a clean Python `3.13.15` environment with the pinned root dependencies, including scikit-learn `1.6.1` and Streamlit `1.61.1`: 8 tests run, 8 passed, 0 failed. Locked-artifact metadata, the unrounded threshold boundary, CSV and XLSX input handling, missing-input blocking, recommended actions, and synthetic prediction parity all remained unchanged. The fitted model artifacts were not retrained.
+
 ## Limitations of this validation
 
 - Automated tests establish software behavior, not clinical effectiveness.
